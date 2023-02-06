@@ -166,7 +166,6 @@ BG_OBJ_WIDTH = 40
 BG_OBJ_HEIGHT = 100
 BG_OBJ_X =  0 - round(BG_OBJ_WIDTH/2)
 BG_OBJ_Y = 150+16-BG_OBJ_HEIGHT
-print(f'{BG_OBJ_X + randint(-DISPLAY_SIZE[0]/2, (DISPLAY_SIZE[0]-BG_OBJ_WIDTH)/2+BG_OBJ_WIDTH)/0.1=}')
 background_objects = [
     BackgroundObject(parallax/100,          
                     pygame.Rect(BG_OBJ_X + round(randint(-DISPLAY_SIZE[0]/2, (DISPLAY_SIZE[0]-BG_OBJ_WIDTH)/2+BG_OBJ_WIDTH)*100/parallax),
