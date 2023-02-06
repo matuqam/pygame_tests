@@ -158,7 +158,7 @@ pygame.mixer.music.play(-1)
 
 grass_sound_timer = 0
 
-player = e.entity(0,100,5,13,'player')
+player = e.Entity(0,100,5,13,'player')
 grass_tiles:List[pygame.Rect] = []
 
 # background tiles
