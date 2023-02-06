@@ -26,7 +26,7 @@ The engine provides generic reussable classes and functions.
 
 ## development steps
 * [ ] character
-*    [ ] spawn
-*    [ ] movement
-*    [ ] behaviour
-*    [ ] speach
+    * [ ] spawn
+    * [ ] movement
+    * [ ] behaviour
+    * [ ] speach
