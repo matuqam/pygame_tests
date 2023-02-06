@@ -9,8 +9,6 @@ from pygame.locals import *
 import data.engine as e
 
 
-
-
 WINDOW_SIZE = (600,400)
 DISPLAY_SIZE = (300,200)
 # DISPLAY_SIZE = WINDOW_SIZE
@@ -97,8 +95,6 @@ class Backgrounds(list):
             self.append(e)
 
 
-
-
 def get_draw_rect(rect: pygame.Rect, parallax: int)->pygame.Rect:
     '''Returns the draw coordinates considering:
     * a parallax
@@ -152,9 +148,6 @@ e.load_animations('data/images/entities/')
 
 game_map:Dict[str,Tile] = {}
 
-
-
-
 jump_sounds = [pygame.mixer.Sound('data/audio/jump.wav'), pygame.mixer.Sound('data/audio/jump2.wav')]
 grass_sounds = [pygame.mixer.Sound('data/audio/grass_0.wav'),pygame.mixer.Sound('data/audio/grass_1.wav')]
 grass_sounds[0].set_volume(0.2)
@@ -168,18 +161,14 @@ grass_sound_timer = 0
 player = e.entity(0,100,5,13,'player')
 grass_tiles:List[pygame.Rect] = []
 
-
-
+# background tiles
 BG_OBJ_WIDTH = 40
 BG_OBJ_HEIGHT = 100
 BG_OBJ_X =  0 - round(BG_OBJ_WIDTH/2)
 BG_OBJ_Y = 150+16-BG_OBJ_HEIGHT
 print(f'{BG_OBJ_X + randint(-DISPLAY_SIZE[0]/2, (DISPLAY_SIZE[0]-BG_OBJ_WIDTH)/2+BG_OBJ_WIDTH)/0.1=}')
 background_objects = [
-    BackgroundObject(parallax/100, 
-                    #  pygame.Rect(BG_OBJ_X + randint(-DISPLAY_SIZE[0]/2, (DISPLAY_SIZE[0]-BG_OBJ_WIDTH)/2+BG_OBJ_WIDTH)*1/(1.001-1/parallax)*10,
-                    # pygame.Rect(BG_OBJ_X + DISPLAY_SIZE[0]/2*(parallax**2),
-                    # pygame.Rect(BG_OBJ_X + randint(-DISPLAY_SIZE[0]/2, (DISPLAY_SIZE[0]-BG_OBJ_WIDTH)/2+BG_OBJ_WIDTH)*(1.001-1/parallax**9),            
+    BackgroundObject(parallax/100,          
                     pygame.Rect(BG_OBJ_X + round(randint(-DISPLAY_SIZE[0]/2, (DISPLAY_SIZE[0]-BG_OBJ_WIDTH)/2+BG_OBJ_WIDTH)*100/parallax),
                                  BG_OBJ_Y,
                                  BG_OBJ_WIDTH,
@@ -187,8 +176,10 @@ background_objects = [
                                  )
                     ) for parallax in range(6, 101)]
 
-
-while True: # game loop
+####
+# game loop
+###########
+while True:
     display.fill(color=(146,244,255)) # clear screen by filling it with blue
 
     # grass sound adjustment
@@ -204,25 +195,18 @@ while True: # game loop
 
     # draw background elements
     ## ground past the tiles
-    # pygame.draw.rect(display,(7,80,75),pygame.Rect(0,120,300,80))
     pygame.draw.rect(display,
                      color=(160,150,14),
                      rect=pygame.Rect(0,
                                       player.y - scroll.y,
                                       DISPLAY_SIZE[0],DISPLAY_SIZE[1]))
-    # adjusted_y = (player.y - scroll.y))
 
     ## background structures
     for background_object in background_objects:
-        # background_object.parallax_move(-player.x, -player.y, from_spawn=True)
-        
         if background_object.is_viewable():
-            # tint = 10+245*background_object.parallax
             tint1 = round((1-(1 - background_object.parallax)) * 255)
             tint2 = round((1 - background_object.parallax) * 255)
-            # print(f'{tint1=}')
             draw_rect = get_draw_rect(background_object.rect, background_object.parallax)
-            # print(f'{background_object.rect.x=}, {background_object.rect.y=}')
             pygame.draw.rect(display,(tint1,tint2,255),draw_rect)
     
     # generate and display tiles
