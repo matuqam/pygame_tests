@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict
+from typing import Any, List, Tuple, Dict
 import pygame, math, os
 from pygame.locals import *
 
@@ -31,16 +31,13 @@ class Vector:
 
 
 # 2d collisions test
-def collision_test(object_1:pygame.Rect,object_list:List[pygame.Rect])->List[pygame.Rect]:
-    collision_list = []
-    for obj in object_list:
-        if obj.colliderect(object_1):
-            collision_list.append(obj)
-    return collision_list
+def colliderects(rect:pygame.Rect,rects:List[pygame.Rect])->List[pygame.Rect]:
+    '''return: sublist from `rects` that collid with `rect`'''
+    return [rects[i] for i in rect.collidelistall(rects)]
 
 
 # 2d physics object
-class physics_obj(object):
+class Physics_obj(object):
    
     def __init__(self,x,y,x_size,y_size):
         self.width = x_size
@@ -52,7 +49,7 @@ class physics_obj(object):
     def move(self,movement:Tuple[int,int],platforms:List[pygame.Rect],ramps=[]):
         self.x += movement.x
         self.rect.x = int(self.x)
-        block_hit_list = collision_test(self.rect,platforms)
+        block_hit_list = colliderects(self.rect,platforms)
         collision_types = {'top':False,'bottom':False,'right':False,'left':False,'slant_bottom':False,'data':[]}
         # added collision data to "collision_types". ignore the poorly chosen variable name
         for block in block_hit_list:
@@ -70,7 +67,7 @@ class physics_obj(object):
             self.x = self.rect.x
         self.y += movement.y
         self.rect.y = int(self.y)
-        block_hit_list = collision_test(self.rect,platforms)
+        block_hit_list = colliderects(self.rect,platforms)
         for block in block_hit_list:
             markers = [False,False,False,False]
             if movement.y > 0:
@@ -90,7 +87,7 @@ class physics_obj(object):
 # todo: add 3d physics-based movement
 
 
-class cuboid(object):
+class Cuboid(object):
     
     def __init__(self,x,y,z,x_size,y_size,z_size):
         self.x = x
@@ -116,28 +113,21 @@ class cuboid(object):
             return False
 
 # entity stuff
-
-def simple_entity(x,y,e_type):
-    return entity(x,y,1,1,e_type)
-
-def flip(img,boolean=True):
-    return pygame.transform.flip(img,boolean,False)
- 
-def blit_center(surf,surf2,pos):
+def blit_center(surf:pygame.Surface,surf2:pygame.Surface,pos:Tuple[int,int]):
     x = int(surf2.get_width()/2)
     y = int(surf2.get_height()/2)
     surf.blit(surf2,(pos[0]-x,pos[1]-y))
  
 
-class entity(object):
+class Entity(object):
     global animation_database, animation_higher_database
    
-    def __init__(self,x,y,size_x,size_y,e_type): # x, y, size_x, size_y, type
+    def __init__(self,x:int,y:int,size_x:int,size_y:int,e_type:Any):
         self.x = x
         self.y = y
         self.size_x = size_x
         self.size_y = size_y
-        self.obj = physics_obj(x,y,size_x,size_y)
+        self.obj = Physics_obj(x,y,size_x,size_y)
         self.animation = None
         self.image = None
         self.animation_frame = 0
@@ -237,19 +227,22 @@ class entity(object):
     def get_current_img(self):
         if self.animation == None:
             if self.image != None:
-                return flip(self.image,self.flip)
+                return pygame.transform.flip(self.image,self.flip,False)
             else:
                 return None
         else:
-            return flip(animation_database[self.animation[self.animation_frame]],self.flip)
+            return pygame.transform.flip(animation_database[self.animation[self.animation_frame]],
+                        self.flip, False)
 
     def get_drawn_img(self):
         image_to_render = None
         if self.animation == None:
             if self.image != None:
-                image_to_render = flip(self.image,self.flip).copy()
+                image_to_render = pygame.transform.flip(self.image,self.flip,
+                                                        False).copy()
         else:
-            image_to_render = flip(animation_database[self.animation[self.animation_frame]],self.flip).copy()
+            image_to_render = pygame.transform.flip(animation_database[self.animation[self.animation_frame]],
+                                                    self.flip,False).copy()
         if image_to_render != None:
             center_x = image_to_render.get_width()/2
             center_y = image_to_render.get_height()/2
@@ -262,9 +255,10 @@ class entity(object):
         image_to_render = None
         if self.animation == None:
             if self.image != None:
-                image_to_render = flip(self.image,self.flip).copy()
+                image_to_render = pygame.transform.flip(self.image,self.flip, False).copy()
         else:
-            image_to_render = flip(animation_database[self.animation[self.animation_frame]],self.flip).copy()
+            image_to_render = pygame.transform.flip(animation_database[self.animation[self.animation_frame]],
+                                                    self.flip, False).copy()
         if image_to_render != None:
             center_x = image_to_render.get_width()/2
             center_y = image_to_render.get_height()/2
@@ -353,7 +347,7 @@ def load_particle_images(path):
             pass
 
 
-class particle(object):
+class Particle(object):
 
     def __init__(self,x,y,particle_type,motion,decay_rate,start_frame,custom_color=None):
         self.x = x
@@ -384,8 +378,13 @@ class particle(object):
         
 
 # other useful functions
-
-def swap_color(img,old_c,new_c):
+def swap_color(img:pygame.Surface, old_c:Tuple[int,int,int], new_c:Tuple[int,int,int])->None:
+    '''
+    img: Surface, surface onto which to apply `old_c` color key 
+    old_c: Color, color to be applied to `img`
+    new_c: Color, used to fill a new Surface.
+    return: Surface, new Surface with `img` blit onto it.
+    '''
     global e_colorkey
     img.set_colorkey(old_c)
     surf = img.copy()
