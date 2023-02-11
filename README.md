@@ -1,4 +1,5 @@
-# pygame_tests
+# About repo
+This in an integration repo where knowlege is put together and tested.
 
 # About the "game"
 This is a platformer style game.
