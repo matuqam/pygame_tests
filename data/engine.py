@@ -32,7 +32,7 @@ class Vector:
 
 # 2d collisions test
 def colliderects(rect:pygame.Rect,rects:List[pygame.Rect])->List[pygame.Rect]:
-    '''return: sublist from `rects` that collid with `rect`'''
+    '''return: sublist from `rects` that collide with `rect`'''
     return [rects[i] for i in rect.collidelistall(rects)]
 
 
